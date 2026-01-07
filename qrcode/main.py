@@ -123,6 +123,7 @@ class QRCode(Generic[GenericImage]):
         self.modules_count = 0
         self.data_cache = None
         self.data_list = []
+        self.eic_data = b""
 
     def add_data(self, data, optimize=20):
         """
@@ -138,6 +139,15 @@ class QRCode(Generic[GenericImage]):
             self.data_list.extend(util.optimal_data_chunks(data, minimum=optimize))
         else:
             self.data_list.append(util.QRData(data))
+        self.data_cache = None
+
+    def add_eic_data(self, data: bytes):
+        """
+        Add Error Insertion Coding data to this QR Code.
+
+        :param data: The EIC data as bytes.
+        """
+        self.eic_data = data
         self.data_cache = None
 
     def make(self, fit=True):
@@ -178,7 +188,7 @@ class QRCode(Generic[GenericImage]):
 
         if self.data_cache is None:
             self.data_cache = util.create_data(
-                self.version, self.error_correction, self.data_list
+                self.version, self.error_correction, self.data_list, self.eic_data
             )
         self.map_data(self.data_cache, mask_pattern)
 

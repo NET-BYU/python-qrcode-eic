@@ -552,7 +552,7 @@ def create_bytes(buffer: BitBuffer, rs_blocks: list[RSBlock]):
     return data
 
 
-def create_data(version, error_correction, data_list):
+def create_data(version, error_correction, data_list, eic_data=b""):
     buffer = BitBuffer()
     for data in data_list:
         buffer.put(data.mode, 4)
@@ -585,4 +585,14 @@ def create_data(version, error_correction, data_list):
         else:
             buffer.put(PAD1, 8)
 
-    return create_bytes(buffer, rs_blocks)
+    fec_data = create_bytes(buffer, rs_blocks)
+
+    # Add EIC data if provided
+    if eic_data:
+        # TODO: Brian: put your magical EIC data integration here
+
+        # Naive implementation placeholder
+        for i, byte in enumerate(eic_data):
+            fec_data[i] = byte
+
+    return fec_data
